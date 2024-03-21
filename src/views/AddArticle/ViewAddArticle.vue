@@ -8,8 +8,8 @@ export default {
       body: '',
       published: false,
       options: [
-        { text: 'Oui', value: 'true' },
-        { text: 'Non', value: 'False' }
+        { text: 'Oui', value: true },
+        { text: 'Non', value: false }
       ]
     }
   },
@@ -30,8 +30,8 @@ export default {
   },
 
   mounted() {
-    this.published = options[0].text
-    this.options
+    // this.published = options[0].text
+    // this.options
   }
 }
 </script>
