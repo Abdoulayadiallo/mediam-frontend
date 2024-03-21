@@ -5,14 +5,13 @@ export default {
     return {
       email: '',
       name: '',
-      password: '',
-      user: {}
+      password: ''
     }
   },
   methods: {
     async AddUser() {
       try {
-        this.user = await axios.post('http://localhost:3000/users', {
+        const user = await axios.post('http://localhost:3000/users', {
           name: this.name,
           email: this.email,
           password: this.password
@@ -25,9 +24,7 @@ export default {
     }
   },
 
-  mounted() {
-    console.log(this.user)
-  }
+  mounted() {}
 }
 </script>
 
