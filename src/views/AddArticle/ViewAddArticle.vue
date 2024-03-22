@@ -1,5 +1,6 @@
 <script>
 import axios from 'axios'
+import Swal from 'sweetalert2'
 export default {
   data() {
     return {
@@ -23,6 +24,12 @@ export default {
           published: this.published
         })
         console.log(article)
+        Swal.fire({
+          title: "Ajout d'article",
+          text: 'Article crée avec succès',
+          icon: 'success',
+          timer: 2000
+        }).then(setTimeout(() => this.$router.push(`/article/${article.data.id}`), 2500))
       } catch (e) {
         console.log(e)
       }

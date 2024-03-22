@@ -1,25 +1,71 @@
 <script>
 import axios from 'axios'
+import Swal from 'sweetalert2'
+import { Form, Field, ErrorMessage } from 'vee-validate'
+import * as yup from 'yup'
+
 export default {
+  name: 'SignUp',
+  components: {
+    Form,
+    Field,
+    ErrorMessage
+  },
   data() {
+    const schema = yup.object().shape({
+      name: yup
+        .string()
+        .required('Nom est requis!')
+        .min(3, 'Must be at least 3 characters!')
+        .max(20, 'Must be maximum 20 characters!'),
+      email: yup
+        .string()
+        .required('Email est requis!')
+        .email('Email is invalid!')
+        .max(50, 'Must be maximum 50 characters!'),
+      password: yup
+        .string()
+        .required('Mots de passe requis!')
+        .min(6, 'Must be at least 6 characters!')
+        .max(40, 'Must be maximum 40 characters!'),
+      passwordConfirmed: yup
+        .string()
+        .required('Mots de passe requis!')
+        .min(6, 'Must be at least 6 characters!')
+        .max(40, 'Must be maximum 40 characters!')
+    })
     return {
       email: '',
       name: '',
-      password: ''
+      password: '',
+      passwordConfirmed: '',
+      passwordError: '',
+      schema
     }
   },
   methods: {
-    async AddUser() {
-      try {
-        const user = await axios.post('http://localhost:3000/users', {
-          name: this.name,
-          email: this.email,
-          password: this.password
-        })
+    showAlert() {},
 
-        console.log(user)
-      } catch (e) {
-        console.log(e)
+    async AddUser() {
+      if (this.password == this.passwordConfirmed) {
+        try {
+          const user = await axios.post('http://localhost:3000/users', {
+            name: this.name,
+            email: this.email,
+            password: this.password
+          })
+          Swal.fire({
+            title: 'Creation de compte?',
+            text: 'Compte crée avec succès',
+            icon: 'success',
+            timer: 2000
+          }).then(setTimeout(() => this.$router.push('/login'), 2000))
+          console.log(user)
+        } catch (e) {
+          console.log(e)
+        }
+      } else {
+        this.passwordError = 'Les deux mots de passe ne corresponde pas'
       }
     }
   },
@@ -30,13 +76,14 @@ export default {
 
 <template>
   <div class="container-fluid">
-    <div class="form-signup">
+    <Form class="form-signup" @submit="AddUser" :validation-schema="schema">
       <div class="text-center mb-4">
         <h1 class="h3 mb-3 font-weight-normal">Inscription</h1>
       </div>
 
       <div class="form-label-group">
-        <input
+        <Field
+          name="name"
           type="name"
           id="inputName"
           class="form-control"
@@ -46,9 +93,11 @@ export default {
           autofocus
         />
         <label for="inputName">Nom & Prenom</label>
+        <ErrorMessage name="name" class="error-feedback" />
       </div>
       <div class="form-label-group">
-        <input
+        <Field
+          name="email"
           type="email"
           id="inputEmail"
           class="form-control"
@@ -58,10 +107,12 @@ export default {
           autofocus
         />
         <label for="inputEmail">Email</label>
+        <ErrorMessage name="email" class="error-feedback" />
       </div>
 
       <div class="form-label-group">
-        <input
+        <Field
+          name="password"
           type="password"
           id="inputPassword"
           class="form-control"
@@ -70,12 +121,25 @@ export default {
           required
         />
         <label for="inputPassword">Mot de passe</label>
+        <ErrorMessage name="password" class="error-feedback" />
       </div>
-      <button class="btn btn-lg btn-primary btn-block" type="submit" @click="AddUser">
-        S'inscrire
-      </button>
+      <div class="form-label-group">
+        <Field
+          name="passwordConfirmed"
+          type="password"
+          id="inputPasswordConfirmed"
+          class="form-control"
+          v-model="passwordConfirmed"
+          placeholder="Confirmer mot de passe"
+          required
+        />
+        <label for="inputPasswordConfirmed">Confirmer mot de passe</label>
+        <ErrorMessage name="passwordConfirmed" class="error-feedback" />
+      </div>
+      <div v-if="passwordError">{{ passwordError }}</div>
+      <button class="btn btn-lg btn-primary btn-block" type="submit">S'inscrire</button>
       <p class="mt-5 mb-3 text-muted text-center">&copy; 2024-2025</p>
-    </div>
+    </Form>
   </div>
 </template>
 
@@ -85,7 +149,8 @@ export default {
   --input-padding-y: 0.75rem;
 }
 
-.form-signup {
+.form-signup,
+.form-signin {
   width: 100%;
   max-width: 420px;
   padding: 15px;
