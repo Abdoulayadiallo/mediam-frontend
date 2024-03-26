@@ -4,6 +4,8 @@ import ViewArticle from '@/views/Article/ViewArticle.vue'
 import ViewLogin from '@/views/Login/ViewLogin.vue'
 import ViewSignUp from '@/views/SignUp/ViewSignUp.vue'
 import ViewAddArticle from '@/views/AddArticle/ViewAddArticle.vue'
+import ProfilView from '@/views/Profil/ProfilView.vue'
+import Article from '@/views/Article/Article.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -19,6 +21,11 @@ const router = createRouter({
       component: ViewArticle
     },
     {
+      path: '/articles',
+      name: 'articles',
+      component: Article
+    },
+    {
       path: '/login',
       name: 'login',
       component: ViewLogin
@@ -32,9 +39,11 @@ const router = createRouter({
       path: '/add-article',
       name: 'addarticle',
       component: ViewAddArticle
-      // meta: {
-      //   requiresAuth: true // Add meta field to indicate protected route
-      // }
+    },
+    {
+      path: '/profil',
+      name: 'profil',
+      component: ProfilView
     }
   ]
 })

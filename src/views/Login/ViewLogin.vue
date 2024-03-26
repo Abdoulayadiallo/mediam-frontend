@@ -21,39 +21,32 @@ export default {
       schema
     }
   },
+  created() {
+    if (this.loggedIn) {
+      this.$router.push('/')
+    }
+  },
   computed: {
     loggedIn() {
       return this.$store.state.auth.status.loggedIn
     }
   },
   methods: {
-    // async Login() {
-    //   try {
-    //     const response = await axios.post('http://localhost:3000/auth/login', {
-    //       email: this.email,
-    //       password: this.password
-    //     })
-
-    //     console.log(response)
-    //     console.log(response.data)
-    //     const accessToken = response.data.accessToken
-    //     localStorage.setItem('token', accessToken)
-    //   } catch (e) {
-    //     console.log(e)
-    //   }
-    // },
     handleLogin(user) {
       console.log(user)
+      this.loading = true
       this.$store.dispatch('auth/login', user).then(
         () => {
           this.$router.push('/')
         },
         (error) => {
+          this.error = true
           this.loading = false
           this.message =
             (error.response && error.response.data && error.response.data.message) ||
             error.message ||
             error.toString()
+          console.log(this.message)
         }
       )
     }
@@ -70,7 +63,7 @@ export default {
       </div>
 
       <div class="form-label-group">
-        <input
+        <Field
           name="email"
           type="email"
           id="inputEmail"
@@ -85,7 +78,7 @@ export default {
       </div>
 
       <div class="form-label-group">
-        <input
+        <Field
           name="password"
           type="password"
           id="inputPassword"
@@ -97,11 +90,17 @@ export default {
         <label for="inputPassword">Mot de passe</label>
         <ErrorMessage name="password" class="error-feedback" />
       </div>
+      <div class="alert alert-danger" role="alert" v-if="error">
+        Email ou mot de passe incorrect
+      </div>
 
       <div class="checkbox mb-3">
         <label> <input type="checkbox" value="remember-me" /> Remember me </label>
       </div>
-      <button class="btn btn-lg btn-primary btn-block">Se connecter</button>
+      <button class="btn btn-lg btn-primary btn-block">
+        <span v-show="loading" class="spinner-border spinner-border-sm"></span>
+        <span> Se connecter </span>
+      </button>
       <p class="mt-5 mb-3 text-muted text-center">&copy; 2024-2025</p>
     </Form>
   </div>

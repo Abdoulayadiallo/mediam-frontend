@@ -1,10 +1,8 @@
 <script lang="ts">
 import axios from 'axios'
 export default {
-  name: 'homeView',
+  name: 'ArticleView',
 
-  // Properties returned from data() become reactive state
-  // and will be exposed on `this`.
   data() {
     return {
       articleList: []
@@ -22,12 +20,10 @@ export default {
     }
   },
 
-  // Lifecycle hooks are called at different stages
-  // of a component's lifecycle.
-  // This function will be called when the component is mounted.
+
+
   mounted() {
     this.getArticles()
-    //console.log(`The Article list is ${this.articleList}.`)
   }
 }
 </script>
@@ -35,7 +31,7 @@ export default {
 <template>
   <main>
     <div class="container">
-      <div class="row border-bottom p-2" v-for="(article, index) in articleList.slice().reverse()" :key="index">
+      <div class="row border-bottom p-2" v-for="(article, index) in articleList" :key="index">
         <div class="col-sm-10 col-6">
           <div>
             <img
