@@ -1,22 +1,38 @@
 <script>
 import UserService from '../../services/user.service'
+import { Form, Field, ErrorMessage } from 'vee-validate'
+import * as yup from 'yup'
+import axios from 'axios'
+import authHeader from '../../services/auth-header'
+import Swal from 'sweetalert2'
+
 export default {
   name: 'ProfilView',
-
+  components: {
+    Form,
+    Field,
+    ErrorMessage
+  },
   data() {
+    const schema = yup.object().shape({
+      email: yup.string().required('Email est requis'),
+      password: yup.string().required('Mot de passe est requis!')
+    })
     return {
+      schema,
       fileName: '',
       preview: null,
       //  preset: process.env.VUE_APP_UPLOAD_PRESET,
       formData: null,
       //  cloudName: process.env.VUE_APP_CLOUD_NAME,
       success: '',
-      user: {}
+      user: {},
+      userId: localStorage.getItem('userId')
     }
   },
   methods: {
-    getUserById(userId) {
-      UserService.getUser(userId).then(
+    getUserById() {
+      UserService.getUser(this.userId).then(
         (response) => {
           this.user = response.data
           console.log(this.user)
@@ -28,6 +44,28 @@ export default {
             error.toString()
         }
       )
+    },
+    async UpdateUserProfile() {
+      console.log('_________-____-_____^-_-^____')
+      try {
+        const user = await axios.patch(
+          `http://localhost:3000/users/${this.userId}`,
+          {
+            name: this.user.name,
+            email: this.user.email
+          },
+          { headers: authHeader() }
+        )
+        console.log(user)
+        Swal.fire({
+          title: 'Profil',
+          text: 'Profil modifier avec succès',
+          icon: 'success',
+          timer: 3000
+        })
+      } catch (e) {
+        console.log(e)
+      }
     },
     handleFileChange: function (event) {
       this.file = event.files[0]
@@ -51,9 +89,8 @@ export default {
   //     }
   //   },
   mounted() {
-    const userId = localStorage.getItem('userId')
-    if (userId) {
-      this.getUserById(userId)
+    if (this.userId) {
+      this.getUserById()
     }
   }
 }
@@ -96,25 +133,26 @@ export default {
       </div>
       <div class="col-md-7 col-lg-8">
         <h4 class="mb-3">Profil</h4>
-        <form class="needs-validation" novalidate>
+        <Form class="needs-validation" @submit="UpdateUserProfile" :validation-schema="schema">
           <div class="row g-3">
             <div class="col-12">
-              <label for="firstName" class="form-label">Nom & Prenom</label>
-              <input
+              <label for="name" class="form-label">Nom & Prenom</label>
+              <Field
                 type="text"
                 class="form-control"
+                name="name"
                 id="name"
                 placeholder=""
-                value=""
                 required
                 v-model="user.name"
               />
-              <div class="invalid-feedback">Valid first name is required.</div>
+              <ErrorMessage name="name" class="invalid-feedback" />
             </div>
 
             <div class="col-12">
               <label for="email" class="form-label">Email</label>
-              <input
+              <Field
+                name="email"
                 type="email"
                 class="form-control"
                 id="email"
@@ -122,13 +160,11 @@ export default {
                 v-model="user.email"
                 required
               />
-              <div class="invalid-feedback">
-                Please enter a valid email address for shipping updates.
-              </div>
+              <ErrorMessage name="email" class="invalid-feedback" />
             </div>
           </div>
-          <button class="w-100 btn btn-primary btn-md mt-2" type="submit">Enregistrer</button>
-        </form>
+          <button class="w-100 btn btn-primary btn-md mt-2">Enregistrer</button>
+        </Form>
         <hr class="my-4" />
 
         <h4 class="mb-3">Mot de passe</h4>

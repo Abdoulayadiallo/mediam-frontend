@@ -21,7 +21,7 @@ export default {
             console.log(res)
             this.article = res.data
           })
-        console.log(response)
+        console.log(responses)
       } catch (error) {
         console.log(error)
       }

@@ -90,7 +90,6 @@ export default {
           v-model="name"
           placeholder="Nom & Prenom"
           required
-          autofocus
         />
         <label for="inputName">Nom & Prenom</label>
         <ErrorMessage name="name" class="error-feedback" />
@@ -104,7 +103,6 @@ export default {
           v-model="email"
           placeholder="Email"
           required
-          autofocus
         />
         <label for="inputEmail">Email</label>
         <ErrorMessage name="email" class="error-feedback" />

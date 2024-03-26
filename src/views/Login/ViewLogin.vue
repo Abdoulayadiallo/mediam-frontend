@@ -18,6 +18,8 @@ export default {
     return {
       email: '',
       password: '',
+      error: false,
+      loading: false,
       schema
     }
   },
@@ -71,7 +73,6 @@ export default {
           placeholder="Email"
           v-model="email"
           required
-          autofocus
         />
         <label for="inputEmail">Email</label>
         <ErrorMessage name="email" class="error-feedback" />

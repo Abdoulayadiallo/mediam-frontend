@@ -4,11 +4,12 @@ import Swal from 'sweetalert2'
 export default {
   data() {
     return {
-      title: '',
-      description: '',
-      body: '',
-      published: false,
-      userId: '',
+      id: this.$route.params.id,
+      article: {},
+      // title: '',
+      // description: '',
+      // body: '',
+      // published: false,
       options: [
         { text: 'Oui', value: true },
         { text: 'Non', value: false }
@@ -16,34 +17,34 @@ export default {
     }
   },
   methods: {
-    async AddArticle() {
+    async getArticle() {
       try {
-        // const article = await axios.post('http://localhost:3000/articles', {
-        //   title: this.title,
-        //   description: this.description,
-        //   body: this.body,
-        //   published: this.published,
-        //   authorId: this.userId
-        // })
-        // console.log(article)
-        console.log(
-          'title:',
-          this.title,
-          'description:',
-          this.description,
-          'body:',
-          this.body,
-          'published: ',
-          this.published,
-          'authorId:',
-          this.userId
-        )
+        const responses = await axios
+          .get(`http://localhost:3000/articles/${this.id}`)
+          .then((res) => {
+            console.log(res)
+            this.article = res.data
+          })
+        console.log(responses)
+      } catch (error) {
+        console.log(error)
+      }
+    },
+    async UpdateArticle() {
+      try {
+        const article = await axios.patch(`http://localhost:3000/articles/${this.id}`, {
+          title: this.article.title,
+          description: this.article.description,
+          body: this.article.body,
+          published: this.article.published
+        })
+        console.log(article)
         Swal.fire({
-          title: "Ajout d'article",
-          text: 'Article crée avec succès',
+          title: "Modification d'article",
+          text: 'Article modifier avec succès',
           icon: 'success',
-          timer: 2000
-        }).then(setTimeout(() => this.$router.push(`/article/${article.data.id}`), 2500))
+          timer: 3000
+        }).then(setTimeout(() => this.$router.push(`/article/${article.data.id}`), 5000))
       } catch (e) {
         console.log(e)
       }
@@ -51,8 +52,8 @@ export default {
   },
 
   mounted() {
-    this.userId = localStorage.getItem('userId')
-    console.log(this.userId)
+    this.getArticle()
+    // this.options
   }
 }
 </script>
@@ -61,7 +62,7 @@ export default {
   <div class="container-fluid">
     <div class="form-add-article">
       <div class="text-center mb-4">
-        <h1 class="h3 mb-3 font-weight-normal">Ajouter un article</h1>
+        <h1 class="h3 mb-3 font-weight-normal">Modifier un article</h1>
       </div>
 
       <div class="form-label-group">
@@ -69,7 +70,7 @@ export default {
           type="title"
           id="inputTitle"
           class="form-control"
-          v-model="title"
+          v-model="article.title"
           placeholder="Titre"
           required
           autofocus
@@ -81,7 +82,7 @@ export default {
           type="description"
           id="inputDescription"
           class="form-control"
-          v-model="description"
+          v-model="article.description"
           placeholder="Description"
           required
           rows="2"
@@ -95,7 +96,7 @@ export default {
           type="body"
           id="inputBody"
           class="form-control"
-          v-model="body"
+          v-model="article.body"
           placeholder="Contenu"
           required
           rows="3"
@@ -104,14 +105,14 @@ export default {
       </div>
       <div class="form-group">
         <label for="publierSelect1">Publier</label>
-        <select class="form-control" id="publierSelect1" v-model="published">
+        <select class="form-control" id="publierSelect1" v-model="article.published">
           <option v-for="(option, index) in options" :key="index" :value="option.value">
             {{ option.text }}
           </option>
         </select>
       </div>
 
-      <button class="btn btn-lg btn-primary btn-block mt-2" type="submit" @click="AddArticle">
+      <button class="btn btn-lg btn-primary btn-block mt-2" type="submit" @click="UpdateArticle">
         Enregistrer
       </button>
       <p class="mt-5 mb-3 text-muted text-center">&copy; 2024-2025</p>

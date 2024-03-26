@@ -4,6 +4,7 @@ import ViewArticle from '@/views/Article/ViewArticle.vue'
 import ViewLogin from '@/views/Login/ViewLogin.vue'
 import ViewSignUp from '@/views/SignUp/ViewSignUp.vue'
 import ViewAddArticle from '@/views/AddArticle/ViewAddArticle.vue'
+import ViewUpdateArticle from '@/views/UpdateArticle/ViewUpdateArticle.vue'
 import ProfilView from '@/views/Profil/ProfilView.vue'
 import Article from '@/views/Article/Article.vue'
 
@@ -39,6 +40,11 @@ const router = createRouter({
       path: '/add-article',
       name: 'addarticle',
       component: ViewAddArticle
+    },
+    {
+      path: '/update-article/:id',
+      name: 'updateArticle',
+      component: ViewUpdateArticle
     },
     {
       path: '/profil',

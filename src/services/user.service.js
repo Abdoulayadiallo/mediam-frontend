@@ -10,7 +10,7 @@ class UserService {
   getAllUser() {
     return axios.get(`${API_URL}`,{ headers: authHeader() })
   }
-  g
+  
 }
 
 export default new UserService()
