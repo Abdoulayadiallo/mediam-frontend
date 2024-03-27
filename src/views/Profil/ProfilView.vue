@@ -16,10 +16,23 @@ export default {
   data() {
     const schema = yup.object().shape({
       email: yup.string().required('Email est requis'),
-      password: yup.string().required('Mot de passe est requis!')
+      name: yup.string().required('nom et prenom est requis!')
+    })
+    const schemapassword = yup.object().shape({
+      password: yup
+        .string()
+        .required('Mot de passe est requis')
+        .min(6, 'le mot de passe doit contenir au moins 6 caractères'),
+      newpassword: yup
+        .string()
+        .required('Nouveau Mot de passe est requis!')
+        .min(6, 'le mot de passe doit contenir au moins 6 caractères'),
+      confirmpassword: yup
+        .string()
+        .required('Veuillez confirmer le mot de passe!')
+        .min(6, 'le mot de passe doit contenir au moins 6 caractères')
     })
     return {
-      schema,
       fileName: '',
       preview: null,
       //  preset: process.env.VUE_APP_UPLOAD_PRESET,
@@ -27,7 +40,13 @@ export default {
       //  cloudName: process.env.VUE_APP_CLOUD_NAME,
       success: '',
       user: {},
-      userId: localStorage.getItem('userId')
+      userId: localStorage.getItem('userId'),
+      password: '',
+      newpassword: '',
+      confirmpassword: '',
+      schemapassword,
+      schema,
+      message: ''
     }
   },
   methods: {
@@ -65,6 +84,30 @@ export default {
         })
       } catch (e) {
         console.log(e)
+      }
+    },
+    async UpdateUserPassword() {
+      console.log('user password')
+      try {
+        const user = await axios.patch(
+          `http://localhost:3000/users/motdepasse/${this.userId}`,
+          {
+            password: this.password,
+            newpassword: this.newpassword,
+            confirmpassword: this.confirmpassword
+          },
+          { headers: authHeader() }
+        )
+        console.log(user)
+        Swal.fire({
+          title: 'Mot de passe',
+          text: 'Mot de passe modifier avec succès',
+          icon: 'success',
+          timer: 3000
+        })
+      } catch (e) {
+        console.log(e)
+        this.message = e.response.data.message
       }
     },
     handleFileChange: function (event) {
@@ -168,45 +211,51 @@ export default {
         <hr class="my-4" />
 
         <h4 class="mb-3">Mot de passe</h4>
-        <form>
+        <Form @submit="UpdateUserPassword" :validation-schema="schemapassword">
           <div class="row gy-3">
             <div class="col-12">
-              <label for="lastpassword" class="form-label">Ancien mot de passe</label>
+              <label for="password" class="form-label">Ancien mot de passe</label>
               <input
+                name="password"
                 type="password"
                 class="form-control"
-                id="lastpassword"
-                placeholder=""
+                id="password"
+                v-model="password"
                 required
               />
-              <div class="invalid-feedback">Ancien mot de passe requis</div>
+              <ErrorMessage name="password" class="invalid-feedback" />
             </div>
 
             <div class="col-md-6">
               <label for="newpassword" class="form-label">Nouveau mot de passe</label>
-              <input
+              <Field
+                name="newpassword"
                 type="password"
                 class="form-control"
                 id="newpassword"
-                placeholder=""
+                v-model="newpassword"
                 required
               />
-              <div class="invalid-feedback">Nouveau mot de passe requis</div>
+              <ErrorMessage name="newpassword" class="invalid-feedback" />
             </div>
             <div class="col-md-6 mb-2">
               <label for="confirmpassword" class="form-label">Confirmer mot de passe</label>
-              <input
+              <Field
+                name="confirmpassword"
                 type="password"
                 class="form-control"
                 id="confirmpassword"
-                placeholder=""
+                v-model="confirmpassword"
                 required
               />
-              <div class="invalid-feedback">Confirmer mot de passe requis</div>
+              <ErrorMessage name="confirmpassword" class="invalid-feedback" />
+            </div>
+            <div class="alert" v-if="message">
+              {{ message }}
             </div>
           </div>
           <button class="w-100 btn btn-primary btn-md" type="submit">Enregistrer</button>
-        </form>
+        </Form>
       </div>
     </div>
   </div>
